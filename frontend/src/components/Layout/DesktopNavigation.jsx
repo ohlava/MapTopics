@@ -1,4 +1,5 @@
 import { Search, Settings, Home } from 'lucide-react';
+import './DesktopNavigation.css';
 
 const DesktopNavigation = ({ onSearch, activeTab, onTabChange }) => {
   return (

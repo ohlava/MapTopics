@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Settings, BookOpen } from 'lucide-react';
+import './MobileNavigation.css';
 
 const MobileNavigation = ({ activeTab, onTabChange }) => {
   const tabs = [

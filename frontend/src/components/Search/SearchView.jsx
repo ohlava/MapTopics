@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react';
+import './SearchView.css';
 
 const SearchView = () => {
   return (

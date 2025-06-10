@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ExploreCard from './ExploreCard';
 import { apiService } from '../../services/api';
+import './ExploreFeed.css';
 
 // Configuration for scrollback buffer
 const CARDS_PER_LOAD = 5;

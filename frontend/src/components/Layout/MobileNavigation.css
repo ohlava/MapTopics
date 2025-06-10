@@ -1,0 +1,62 @@
+/* MobileNavigation Component Styles */
+
+/* Mobile Navigation */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: var(--spacing-md);
+  background: transparent;
+  pointer-events: none;
+}
+
+.mobile-nav-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-sm);
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  pointer-events: all;
+}
+
+.nav-tab {
+  position: relative;
+  background: none;
+  border: none;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.nav-tab-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.nav-tab-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--text-primary);
+}
+
+.nav-tab-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+}

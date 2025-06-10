@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiService } from '../../services/api';
+import './Debug.css';
 
 const HealthCheck = ({ cardsInMemory, offset, hasMore, totalCount, loading }) => {
   const [status, setStatus] = useState('checking');
@@ -25,7 +26,7 @@ const HealthCheck = ({ cardsInMemory, offset, hasMore, totalCount, loading }) =>
   }
 
   return (
-    <div className={`health-check health-check--${status}`}>
+    <div className={`health-check-overlay health-check--${status}`}>
       <span className="health-indicator">●</span>
       <span className="health-message">
         Backend: {status === 'checking' ? 'Checking...' : message}

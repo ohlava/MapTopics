@@ -1,0 +1,115 @@
+/* SearchView Component Styles */
+
+/* Search View */
+.search-view {
+  min-height: calc(100vh - 80px);
+  padding: var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.search-view .search-container {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.search-header {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.search-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.search-header p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.search-input-container {
+  position: relative;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.search-input-large {
+  width: 100%;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-lg) calc(var(--spacing-lg) * 3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  font-size: 1.2rem;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  color: var(--text-primary);
+}
+
+.search-input-large:focus {
+  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), 0 8px 32px var(--shadow-color);
+}
+
+.search-suggestions h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
+}
+
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.suggestion-chip {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 4px 16px var(--shadow-color);
+  color: var(--text-primary);
+}
+
+.suggestion-chip:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .search-view {
+    padding: var(--spacing-lg);
+    min-height: calc(100vh - 100px);
+  }
+  
+  .search-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .suggestion-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .suggestion-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

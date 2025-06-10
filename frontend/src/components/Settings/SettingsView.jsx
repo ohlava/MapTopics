@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Moon, Sun, User, Key, Palette } from 'lucide-react';
+import './SettingsView.css';
 
 const SettingsView = () => {
   const [darkMode, setDarkMode] = useState(false);
