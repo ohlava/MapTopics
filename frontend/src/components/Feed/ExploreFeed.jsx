@@ -4,7 +4,7 @@ import { apiService } from '../../services/api';
 import './ExploreFeed.css';
 
 // Configuration for scrollback buffer
-const CARDS_PER_LOAD = 5;
+const CARDS_PER_LOAD = 8;
 const MAX_CARDS_IN_MEMORY = 20; // Keep only last 20 cards in memory
 const SCROLLBACK_BUFFER = 10; // Remove cards when we exceed this + MAX_CARDS_IN_MEMORY
 

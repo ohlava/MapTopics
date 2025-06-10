@@ -17,7 +17,7 @@ export const apiService = {
    * @param {number} offset - Number of cards to skip
    * @returns {Promise<{cards: Array, has_more: boolean, total_count: number}>}
    */
-  async getExploreCards(limit = 5, offset = 0) {
+  async getExploreCards(limit = 8, offset = 0) {
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/explore?limit=${limit}&offset=${offset}`,

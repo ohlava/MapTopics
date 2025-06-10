@@ -34,15 +34,31 @@
 }
 
 /* Base Typography and Layout */
+html {
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--background);
-  color: var(--text-primary);
+  background: var(--background) !important;
+  color: var(--text-primary) !important;
   min-height: 100vh;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important; /* Override any flex from index.css */
 }
 
 /* App Layout - Common Structure */
@@ -51,14 +67,17 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 1400px; /* Control the overall app width */
+  margin: 0 auto; /* Center the entire app */
 }
 
 .main-content {
   flex: 1;
   overflow-y: auto;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1200px; /* You can adjust this value to change the main content width */
   margin: 0 auto;
+  padding: 0 var(--spacing-md); /* Add some padding for mobile */
   display: flex;
   justify-content: center;
   align-items: flex-start;
