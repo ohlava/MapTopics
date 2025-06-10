@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import MobileNavigation from './components/Layout/MobileNavigation';
+import DesktopNavigation from './components/Layout/DesktopNavigation';
+import ExploreFeed from './components/Feed/ExploreFeed';
+import SearchView from './components/Search/SearchView';
+import SettingsView from './components/Settings/SettingsView';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [activeTab, setActiveTab] = useState('feed');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect screen size for responsive layout
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  const handleSearch = (query) => {
+    console.log('Search query:', query);
+    // TODO: Implement search functionality
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'feed':
+        return <ExploreFeed />;
+      case 'search':
+        return <SearchView />;
+      case 'settings':
+        return <SettingsView />;
+      default:
+        return <ExploreFeed />;
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="app">
+      {/* Navigation */}
+      {isMobile ? (
+        <MobileNavigation 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+        />
+      ) : (
+        <DesktopNavigation 
+          onSearch={handleSearch} 
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      )}
+
+      {/* Main Content */}
+      <main className={`main-content ${isMobile ? 'mobile' : 'desktop'}`}>
+        {renderContent()}
+      </main>
+    </div>
+  );
+};
 
 export default App

@@ -1,0 +1,49 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Search, Settings, BookOpen } from 'lucide-react';
+
+const MobileNavigation = ({ activeTab, onTabChange }) => {
+  const tabs = [
+    { id: 'feed', label: 'Feed', icon: BookOpen },
+    { id: 'search', label: 'Search', icon: Search },
+    { id: 'settings', label: 'Settings', icon: Settings },
+  ];
+
+  return (
+    <div className="mobile-nav">
+      <div className="mobile-nav-container">
+        {tabs.map((tab) => {
+          const IconComponent = tab.icon;
+          const isActive = activeTab === tab.id;
+          
+          return (
+            <button
+              key={tab.id}
+              className={`nav-tab ${isActive ? 'active' : ''}`}
+              onClick={() => onTabChange(tab.id)}
+            >
+              {isActive && (
+                <motion.div
+                  className="nav-tab-background"
+                  layoutId="activeTab"
+                  initial={false}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30
+                  }}
+                />
+              )}
+              <div className="nav-tab-content">
+                <IconComponent size={24} />
+                <span className="nav-tab-label">{tab.label}</span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default MobileNavigation;
