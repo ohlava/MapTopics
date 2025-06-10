@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Maximize2, Map, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ExploreCard.css';
 
 const ExploreCard = ({ topic, description, sources, isLastCard = false }) => {
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTextTruncated, setIsTextTruncated] = useState(false);
 
@@ -44,8 +46,8 @@ const ExploreCard = ({ topic, description, sources, isLastCard = false }) => {
 
   const handleCreateMindMap = (e) => {
     e.stopPropagation();
-    // TODO: Navigate to mind map creation
-    console.log('Create mind map for:', topic);
+    // Navigate to mind map creation with the topic
+    navigate(`/mindmap/${encodeURIComponent(topic)}`);
   };
 
   return (

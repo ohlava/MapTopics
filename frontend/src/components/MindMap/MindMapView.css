@@ -1,0 +1,154 @@
+/* MindMapView Component Styles */
+
+.mindmap-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Navigation */
+.mindmap-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+  flex-shrink: 0;
+}
+
+.mindmap-nav {
+  max-width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #667eea;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.back-button:hover {
+  background: rgba(102, 126, 234, 0.2);
+  transform: translateY(-1px);
+}
+
+.mindmap-title h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: center;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mindmap-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.action-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Canvas Container */
+.mindmap-canvas {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  min-height: 0; /* Important for flex child */
+}
+
+/* Ensure Excalidraw fills the container */
+.mindmap-canvas .excalidraw {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.mindmap-canvas .excalidraw .excalidraw-container {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .mindmap-nav {
+    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .mindmap-title h2 {
+    font-size: 1.1rem;
+    max-width: 200px;
+  }
+  
+  .action-button span {
+    display: none;
+  }
+  
+  .back-button span {
+    display: none;
+  }
+  
+  .action-button,
+  .back-button {
+    padding: var(--spacing-sm);
+    min-width: 40px;
+    justify-content: center;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .mindmap-nav {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .mindmap-title h2 {
+    font-size: 1rem;
+    max-width: 150px;
+  }
+  
+  .mindmap-actions {
+    gap: var(--spacing-xs);
+  }
+}

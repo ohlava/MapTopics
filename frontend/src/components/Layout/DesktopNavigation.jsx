@@ -1,4 +1,4 @@
-import { Search, Settings, Home } from 'lucide-react';
+import { Search, Settings, Home, Map } from 'lucide-react';
 import './DesktopNavigation.css';
 
 const DesktopNavigation = ({ onSearch, activeTab, onTabChange }) => {
@@ -18,6 +18,13 @@ const DesktopNavigation = ({ onSearch, activeTab, onTabChange }) => {
           >
             <Home size={20} />
             <span>Feed</span>
+          </button>
+          <button 
+            className={`nav-tab ${activeTab === 'mindmap' ? 'active' : ''}`}
+            onClick={() => onTabChange('mindmap')}
+          >
+            <Map size={20} />
+            <span>Mind Map</span>
           </button>
         </div>
 

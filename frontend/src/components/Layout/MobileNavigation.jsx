@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Settings, BookOpen } from 'lucide-react';
+import { Search, Settings, BookOpen, Map } from 'lucide-react';
 import './MobileNavigation.css';
 
 const MobileNavigation = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'feed', label: 'Feed', icon: BookOpen },
     { id: 'search', label: 'Search', icon: Search },
+    { id: 'mindmap', label: 'Mind Map', icon: Map },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 

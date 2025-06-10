@@ -93,7 +93,22 @@ body {
 }
 
 .main-content.desktop {
-  padding-top: 80px; /* Space for desktop nav */
+  padding-top: 120px; /* Space for desktop nav */
+}
+
+/* Fullscreen mode for mind map */
+.main-content.fullscreen {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  overflow: hidden !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 999 !important;
 }
 
 /* Common Utility Classes */
