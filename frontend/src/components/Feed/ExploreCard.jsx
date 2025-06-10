@@ -96,7 +96,7 @@ const ExploreCard = ({ topic, description, sources, isLastCard = false }) => {
             <div className="sources-container">
               {sources?.map((source, index) => (
                 <a
-                  key={index}
+                  key={`source-${source.url}-${source.title}-${index}`}
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -173,7 +173,7 @@ const ExploreCard = ({ topic, description, sources, isLastCard = false }) => {
                   <div className="fullscreen-sources">
                     {sources?.map((source, index) => (
                       <a
-                        key={index}
+                        key={`fullscreen-source-${source.url}-${source.title}-${index}`}
                         href={source.url}
                         target="_blank"
                         rel="noopener noreferrer"

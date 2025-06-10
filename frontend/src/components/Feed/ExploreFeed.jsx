@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import ExploreCard from './ExploreCard';
 import { apiService } from '../../services/api';
 import './ExploreFeed.css';
@@ -16,28 +16,33 @@ const ExploreFeed = ({ onDebugInfoChange }) => {
   const [offset, setOffset] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const observerRef = useRef();
+  const loadingRef = useRef(false); // Prevent race conditions
+
+  // Memoize debug info to prevent infinite loops
+  const debugInfo = useMemo(() => ({
+    cardsInMemory: cards.length,
+    offset,
+    hasMore,
+    totalCount,
+    loading
+  }), [cards.length, offset, hasMore, totalCount, loading]);
 
   // Update debug info in parent component
   useEffect(() => {
     if (onDebugInfoChange) {
-      onDebugInfoChange({
-        cardsInMemory: cards.length,
-        offset,
-        hasMore,
-        totalCount,
-        loading
-      });
+      onDebugInfoChange(debugInfo);
     }
-  }, [cards.length, offset, hasMore, totalCount, loading, onDebugInfoChange]);
+  }, [debugInfo, onDebugInfoChange]);
 
   // Load initial cards
   useEffect(() => {
     loadMoreCards();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadMoreCards = useCallback(async () => {
-    if (loading || !hasMore) return;
+    if (loading || !hasMore || loadingRef.current) return;
     
+    loadingRef.current = true;
     setLoading(true);
     setError(null);
     
@@ -45,7 +50,11 @@ const ExploreFeed = ({ onDebugInfoChange }) => {
       const response = await apiService.getExploreCards(CARDS_PER_LOAD, offset);
       
       setCards(prev => {
-        const newCards = [...prev, ...response.cards];
+        // Check for duplicate IDs to prevent key conflicts
+        const existingIds = new Set(prev.map(card => card.id));
+        const newUniqueCards = response.cards.filter(card => !existingIds.has(card.id));
+        
+        const newCards = [...prev, ...newUniqueCards];
         
         // Implement scrollback buffer - remove old cards if we have too many
         if (newCards.length > MAX_CARDS_IN_MEMORY + SCROLLBACK_BUFFER) {
@@ -66,26 +75,28 @@ const ExploreFeed = ({ onDebugInfoChange }) => {
       // Don't stop infinite scroll on network errors - allow retry
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
-  }, [loading, hasMore, offset]);
+  }, [offset]); // Only depend on offset
 
   // Intersection Observer for infinite scroll
   const lastCardRef = useCallback((node) => {
-    if (loading) return;
+    if (loading || loadingRef.current) return;
     if (observerRef.current) observerRef.current.disconnect();
     
     observerRef.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore && !error) {
+      if (entries[0].isIntersecting && hasMore && !error && !loadingRef.current) {
         loadMoreCards();
       }
     }, { threshold: 0.1 });
     
     if (node) observerRef.current.observe(node);
-  }, [loading, hasMore, loadMoreCards, error]);
+  }, [hasMore, error, loadMoreCards]); // Remove loading from dependencies
 
   // Retry function for error recovery
   const retryLoad = () => {
     setError(null);
+    loadingRef.current = false; // Reset loading ref
     loadMoreCards();
   };
 
@@ -94,7 +105,7 @@ const ExploreFeed = ({ onDebugInfoChange }) => {
       <div className="feed-container">
         {cards.map((card, index) => (
           <div
-            key={card.id}
+            key={`card-${card.id}-${card.topic.replace(/\s+/g, '-').toLowerCase()}`}
             ref={index === cards.length - 1 ? lastCardRef : null}
           >
             <ExploreCard

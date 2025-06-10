@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import MobileNavigation from './components/Layout/MobileNavigation';
 import DesktopNavigation from './components/Layout/DesktopNavigation';
 import ExploreFeed from './components/Feed/ExploreFeed';
@@ -28,9 +28,9 @@ const App = () => {
     // TODO: Implement search functionality
   };
 
-  const handleDebugInfoChange = (info) => {
+  const handleDebugInfoChange = useCallback((info) => {
     setDebugInfo(info);
-  };
+  }, []);
 
   // Clear debug info when switching away from feed tab
   useEffect(() => {
