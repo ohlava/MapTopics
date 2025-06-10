@@ -10,10 +10,10 @@ const DesktopNavigation = ({ onSearch, activeTab, onTabChange }) => {
           <h2>MapTopics</h2>
         </div>
 
-        {/* Feed Navigation */}
-        <div className="nav-feed">
+        {/* Navigation Tabs */}
+        <div className="nav-tabs">
           <button 
-            className={`feed-button ${activeTab === 'feed' ? 'active' : ''}`}
+            className={`nav-tab ${activeTab === 'feed' ? 'active' : ''}`}
             onClick={() => onTabChange('feed')}
           >
             <Home size={20} />
@@ -21,7 +21,7 @@ const DesktopNavigation = ({ onSearch, activeTab, onTabChange }) => {
           </button>
         </div>
 
-        {/* Search Bar */}
+        {/* Search Bar - Always visible on desktop */}
         <div className="nav-search">
           <div className="search-container">
             <Search size={20} className="search-icon" />
@@ -30,6 +30,7 @@ const DesktopNavigation = ({ onSearch, activeTab, onTabChange }) => {
               placeholder="Explore any topic..."
               className="search-input"
               onChange={(e) => onSearch?.(e.target.value)}
+              onFocus={() => onTabChange('search')}
             />
           </div>
         </div>

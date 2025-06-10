@@ -32,12 +32,14 @@
   background-clip: text;
 }
 
-.nav-feed {
+
+
+.nav-tabs {
   display: flex;
-  justify-content: flex-start;
+  gap: var(--spacing-sm);
 }
 
-.feed-button {
+.nav-tab {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
@@ -53,12 +55,11 @@
   font-weight: 500;
 }
 
-.feed-button:hover {
+.nav-tab:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.feed-button.active {
-  background: rgba(102, 126, 234, 0.2);
+.nav-tab.active {
   border-color: rgba(102, 126, 234, 0.3);
   color: #667eea;
 }
@@ -120,7 +121,6 @@
 }
 
 .nav-settings .settings-button.active {
-  background: rgba(102, 126, 234, 0.2);
   border-color: rgba(102, 126, 234, 0.3);
   color: #667eea;
 }
