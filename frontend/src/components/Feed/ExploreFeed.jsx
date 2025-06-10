@@ -1,35 +1,33 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ExploreCard from './ExploreCard';
+import { apiService } from '../../services/api';
 
-// Mock data for development - replace with API calls later
-const generateMockCard = (id) => ({
-  id,
-  topic: `Topic ${id}`,
-  description: `This is a fascinating exploration of Topic ${id}. It covers various aspects and provides insights into the fundamental concepts that make this subject interesting. The topic delves into practical applications and theoretical frameworks that help us understand the broader implications of this field of study.`,
-  sources: [
-    { 
-      title: 'Wikipedia', 
-      url: 'https://wikipedia.org',
-      favicon: 'https://wikipedia.org/static/favicon/wikipedia.ico'
-    },
-    { 
-      title: 'Scientific Journal', 
-      url: 'https://example.com',
-      favicon: null
-    },
-    { 
-      title: 'Research Paper', 
-      url: 'https://example.com',
-      favicon: null
-    }
-  ]
-});
+// Configuration for scrollback buffer
+const CARDS_PER_LOAD = 5;
+const MAX_CARDS_IN_MEMORY = 20; // Keep only last 20 cards in memory
+const SCROLLBACK_BUFFER = 10; // Remove cards when we exceed this + MAX_CARDS_IN_MEMORY
 
-const ExploreFeed = () => {
+const ExploreFeed = ({ onDebugInfoChange }) => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(null);
+  const [offset, setOffset] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const observerRef = useRef();
+
+  // Update debug info in parent component
+  useEffect(() => {
+    if (onDebugInfoChange) {
+      onDebugInfoChange({
+        cardsInMemory: cards.length,
+        offset,
+        hasMore,
+        totalCount,
+        loading
+      });
+    }
+  }, [cards.length, offset, hasMore, totalCount, loading, onDebugInfoChange]);
 
   // Load initial cards
   useEffect(() => {
@@ -40,22 +38,35 @@ const ExploreFeed = () => {
     if (loading || !hasMore) return;
     
     setLoading(true);
+    setError(null);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const newCards = Array.from({ length: 5 }, (_, index) => 
-      generateMockCard(cards.length + index + 1)
-    );
-    
-    setCards(prev => [...prev, ...newCards]);
-    setLoading(false);
-    
-    // Stop loading after 20 cards for demo
-    if (cards.length >= 15) {
-      setHasMore(false);
+    try {
+      const response = await apiService.getExploreCards(CARDS_PER_LOAD, offset);
+      
+      setCards(prev => {
+        const newCards = [...prev, ...response.cards];
+        
+        // Implement scrollback buffer - remove old cards if we have too many
+        if (newCards.length > MAX_CARDS_IN_MEMORY + SCROLLBACK_BUFFER) {
+          const cardsToKeep = newCards.slice(-MAX_CARDS_IN_MEMORY);
+          return cardsToKeep;
+        }
+        
+        return newCards;
+      });
+      
+      setOffset(prev => prev + CARDS_PER_LOAD);
+      setHasMore(response.has_more);
+      setTotalCount(response.total_count);
+      
+    } catch (err) {
+      console.error('Failed to load cards:', err);
+      setError(err.message || 'Failed to load cards. Please try again.');
+      // Don't stop infinite scroll on network errors - allow retry
+    } finally {
+      setLoading(false);
     }
-  }, [cards.length, loading, hasMore]);
+  }, [loading, hasMore, offset]);
 
   // Intersection Observer for infinite scroll
   const lastCardRef = useCallback((node) => {
@@ -63,13 +74,19 @@ const ExploreFeed = () => {
     if (observerRef.current) observerRef.current.disconnect();
     
     observerRef.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
+      if (entries[0].isIntersecting && hasMore && !error) {
         loadMoreCards();
       }
     }, { threshold: 0.1 });
     
     if (node) observerRef.current.observe(node);
-  }, [loading, hasMore, loadMoreCards]);
+  }, [loading, hasMore, loadMoreCards, error]);
+
+  // Retry function for error recovery
+  const retryLoad = () => {
+    setError(null);
+    loadMoreCards();
+  };
 
   return (
     <div className="explore-feed">
@@ -114,9 +131,32 @@ const ExploreFeed = () => {
           </div>
         )}
         
-        {!hasMore && (
+        {error && (
+          <div className="error-card">
+            <div className="error-content">
+              <h3>Unable to load more cards</h3>
+              <p>{error}</p>
+              <button onClick={retryLoad} className="retry-button">
+                Try Again
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {!hasMore && !error && cards.length > 0 && (
           <div className="end-message">
-            <p>You've reached the end! 🎉</p>
+            <p>You've explored {totalCount} topics! 🎉</p>
+            <p>Check back later for more content.</p>
+          </div>
+        )}
+        
+        {!loading && !error && cards.length === 0 && (
+          <div className="empty-state">
+            <h3>No topics available</h3>
+            <p>Please try again later.</p>
+            <button onClick={retryLoad} className="retry-button">
+              Refresh
+            </button>
           </div>
         )}
       </div>

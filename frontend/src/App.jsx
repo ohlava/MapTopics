@@ -4,11 +4,13 @@ import DesktopNavigation from './components/Layout/DesktopNavigation';
 import ExploreFeed from './components/Feed/ExploreFeed';
 import SearchView from './components/Search/SearchView';
 import SettingsView from './components/Settings/SettingsView';
+import HealthCheck from './components/Debug/HealthCheck';
 import './App.css';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('feed');
   const [isMobile, setIsMobile] = useState(false);
+  const [debugInfo, setDebugInfo] = useState({});
 
   // Detect screen size for responsive layout
   useEffect(() => {
@@ -26,21 +28,40 @@ const App = () => {
     // TODO: Implement search functionality
   };
 
+  const handleDebugInfoChange = (info) => {
+    setDebugInfo(info);
+  };
+
+  // Clear debug info when switching away from feed tab
+  useEffect(() => {
+    if (activeTab !== 'feed') {
+      setDebugInfo({});
+    }
+  }, [activeTab]);
+
   const renderContent = () => {
     switch (activeTab) {
       case 'feed':
-        return <ExploreFeed />;
+        return <ExploreFeed onDebugInfoChange={handleDebugInfoChange} />;
       case 'search':
         return <SearchView />;
       case 'settings':
         return <SettingsView />;
       default:
-        return <ExploreFeed />;
+        return <ExploreFeed onDebugInfoChange={handleDebugInfoChange} />;
     }
   };
 
   return (
     <div className="app">
+      <HealthCheck 
+        cardsInMemory={debugInfo.cardsInMemory}
+        offset={debugInfo.offset}
+        hasMore={debugInfo.hasMore}
+        totalCount={debugInfo.totalCount}
+        loading={debugInfo.loading}
+      />
+      
       {/* Navigation */}
       {isMobile ? (
         <MobileNavigation 
