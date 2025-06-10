@@ -7,9 +7,9 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   margin-bottom: var(--spacing-lg);
-  box-shadow: 0 8px 32px var(--shadow-color);
+  box-shadow: 0 8px 10px var(--shadow-color);
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.05s ease;
   height: 400px; /* Fixed height for consistency */
   display: flex;
   flex-direction: column;
@@ -18,7 +18,14 @@
 
 .explore-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Prevent child hover effects from conflicting with card hover */
+.explore-card:hover .mind-map-button,
+.explore-card:hover .source-link,
+.explore-card:hover .expand-button {
+  transform: none !important;
 }
 
 .explore-card.last-card {
