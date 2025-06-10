@@ -95,13 +95,21 @@ const ExploreFeed = () => {
               <div className="skeleton-title"></div>
               
               {/* Card body skeleton - multiple text lines to simulate description */}
-              <div className="skeleton-text"></div>
-              <div className="skeleton-text"></div>
-              <div className="skeleton-text"></div>
-              <div className="skeleton-text"></div>
+              <div className="skeleton-body">
+                <div className="skeleton-text-line"></div>
+                <div className="skeleton-text-line"></div>
+                <div className="skeleton-text-line"></div>
+                <div className="skeleton-text-line"></div>
+                <div className="skeleton-text-line"></div>
+                <div className="skeleton-text-line"></div>
+              </div>
               
-              {/* Card footer skeleton */}
-              <div className="skeleton-sources"></div>
+              {/* Card footer skeleton - circles for source links */}
+              <div className="skeleton-sources-container">
+                <div className="skeleton-source-circle"></div>
+                <div className="skeleton-source-circle"></div>
+                <div className="skeleton-source-circle"></div>
+              </div>
             </div>
           </div>
         )}
