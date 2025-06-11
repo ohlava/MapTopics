@@ -109,6 +109,7 @@ body {
   right: 0 !important;
   bottom: 0 !important;
   z-index: 999 !important;
+  /* Remove overflow hidden to allow Excalidraw footer to show */
 }
 
 /* Common Utility Classes */
