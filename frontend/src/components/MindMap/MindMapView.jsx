@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import { ArrowLeft, Save, Download } from 'lucide-react';
@@ -8,37 +8,105 @@ const MindMapView = () => {
   const { topic } = useParams();
   const navigate = useNavigate();
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
+  const [initialData, setInitialData] = useState({
+    elements: [],
+    appState: {
+      viewBackgroundColor: "#ffffff",
+      theme: "light",
+    },
+  });
+  const lastSaveTime = useRef(0);
+
+  // Debug helper - you can call this from browser console
+  window.debugMindMap = {
+    getElements: () => excalidrawAPI?.getSceneElements(),
+    getAppState: () => excalidrawAPI?.getAppState(),
+    getStorageKey: () => storageKey,
+    getSavedData: () => {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : null;
+    },
+    clearStorage: () => localStorage.removeItem(storageKey),
+    api: excalidrawAPI
+  };
+
+  // Determine the storage key based on topic or default
+  const storageKey = `mindmap-${topic || 'default-canvas'}`;
 
   // Load saved data when component mounts
   useEffect(() => {
-    const savedData = localStorage.getItem(`mindmap-${topic || 'untitled'}`);
-    if (savedData && excalidrawAPI) {
-      try {
+    console.log('🎯 MindMapView: Loading data for topic:', topic);
+    console.log('🔑 Storage key:', storageKey);
+    
+    try {
+      const savedData = localStorage.getItem(storageKey);
+      if (savedData) {
         const { elements, appState } = JSON.parse(savedData);
-        excalidrawAPI.updateScene({ elements, appState });
+        const loadedData = {
+          elements: elements || [],
+          appState: {
+            viewBackgroundColor: "#ffffff",
+            theme: "light",
+            ...appState
+          }
+        };
+        console.log('✅ Loaded saved data:', { elementsCount: elements?.length || 0 });
+        setInitialData(loadedData);
+      } else {
+        console.log('📝 No saved data found, using default');
+      }
+    } catch (error) {
+      console.error('❌ Error loading saved mind map:', error);
+    }
+  }, [storageKey]);
+
+  // Debounced auto-save function to prevent infinite loops
+  const debouncedAutoSave = useCallback(() => {
+    const now = Date.now();
+    if (now - lastSaveTime.current < 1000) return; // Prevent saves more frequent than 1 second
+    
+    if (excalidrawAPI) {
+      try {
+        const elements = excalidrawAPI.getSceneElements();
+        const appState = excalidrawAPI.getAppState();
+        
+        console.log('💾 Auto-saving mind map:', { elementsCount: elements.length });
+        
+        const saveData = {
+          elements,
+          appState,
+          topic: topic || 'Default Canvas',
+          timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem(storageKey, JSON.stringify(saveData));
+        lastSaveTime.current = now;
       } catch (error) {
-        console.error('Error loading saved mind map:', error);
+        console.error('❌ Error auto-saving mind map:', error);
       }
     }
-  }, [excalidrawAPI, topic]);
+  }, [excalidrawAPI, storageKey, topic]);
 
+  // Manual save function
   const handleSave = () => {
     if (excalidrawAPI) {
-      const elements = excalidrawAPI.getSceneElements();
-      const appState = excalidrawAPI.getAppState();
-      
-      // Save to localStorage for now
-      const saveData = {
-        elements,
-        appState,
-        topic: topic || 'Untitled',
-        timestamp: new Date().toISOString()
-      };
-      
-      localStorage.setItem(`mindmap-${topic || 'untitled'}`, JSON.stringify(saveData));
-      
-      // Show save confirmation
-      alert('Mind map saved successfully!');
+      try {
+        const elements = excalidrawAPI.getSceneElements();
+        const appState = excalidrawAPI.getAppState();
+        
+        const saveData = {
+          elements,
+          appState,
+          topic: topic || 'Untitled',
+          timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem(storageKey, JSON.stringify(saveData));
+        alert('Mind map saved successfully!');
+      } catch (error) {
+        console.error('Error saving mind map:', error);
+        alert('Failed to save mind map');
+      }
     }
   };
 
@@ -102,13 +170,7 @@ const MindMapView = () => {
       {/* Excalidraw Canvas */}
       <div className="mindmap-canvas">
         <Excalidraw
-          initialData={{
-            elements: [],
-            appState: {
-              viewBackgroundColor: "#ffffff",
-              theme: "light",
-            },
-          }}
+          initialData={initialData}
           excalidrawAPI={(api) => setExcalidrawAPI(api)}
           renderTopRightUI={() => null}
           renderFooter={() => null}
