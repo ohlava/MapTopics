@@ -33,11 +33,14 @@ const DesktopNavigation = ({ onSearch, activeTab, onTabChange }) => {
           <div className="search-container">
             <Search size={20} className="search-icon" />
             <input
+              id="desktop-search-input"
+              name="desktopSearch"
               type="text"
               placeholder="Explore any topic..."
               className="search-input"
               onChange={(e) => onSearch?.(e.target.value)}
               onFocus={() => onTabChange('search')}
+              autoComplete="off"
             />
           </div>
         </div>

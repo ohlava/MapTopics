@@ -12,6 +12,11 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('MindMap Error Boundary caught an error:', error, errorInfo);
+    
+    // Check if this is the collaborators.forEach Safari issue
+    if (error.message && error.message.includes('collaborators.forEach')) {
+      console.warn('⚠️ Safari compatibility issue with Excalidraw collaborators detected');
+    }
   }
 
   render() {

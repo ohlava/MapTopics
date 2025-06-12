@@ -46,6 +46,8 @@ const SearchView = () => {
           <div className="search-input-container">
             <Search size={20} className="search-icon" />
             <input
+              id="mobile-search-input"
+              name="mobileSearch"
               type="text"
               placeholder="Enter a topic to explore..."
               className="search-input-large"

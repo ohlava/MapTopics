@@ -54,7 +54,8 @@ const AppContent = () => {
         navigate('/settings');
         break;
       case 'mindmap':
-        navigate('/mindmap');
+        // Navigate to mindmap with default canvas if no specific topic
+        navigate('/mindmap/default-canvas');
         break;
       default:
         navigate('/');

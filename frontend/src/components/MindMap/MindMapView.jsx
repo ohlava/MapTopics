@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import { ArrowLeft, Save, Download } from 'lucide-react';
+import ErrorBoundary from './ErrorBoundary';
 import './MindMapView.css';
 
 const MindMapView = () => {
@@ -13,6 +14,13 @@ const MindMapView = () => {
     appState: {
       viewBackgroundColor: "#ffffff",
       theme: "light",
+      gridSize: null,
+      zenModeEnabled: false,
+      objectsSnapModeEnabled: false,
+      scrollX: 0,
+      scrollY: 0,
+      zoom: { value: 1 },
+      collaborators: new Map(),
     },
   });
   const lastSaveTime = useRef(0);
@@ -42,14 +50,33 @@ const MindMapView = () => {
       const savedData = localStorage.getItem(storageKey);
       if (savedData) {
         const { elements, appState } = JSON.parse(savedData);
+        
+        // Ensure appState has proper structure for Safari compatibility
+        const cleanAppState = {
+          viewBackgroundColor: "#ffffff",
+          theme: "light",
+          gridSize: null,
+          zenModeEnabled: false,
+          objectsSnapModeEnabled: false,
+          scrollX: appState?.scrollX || 0,
+          scrollY: appState?.scrollY || 0,
+          zoom: appState?.zoom || { value: 1 },
+          collaborators: new Map(), // Always use a fresh Map to avoid Safari issues
+        };
+        
+        // Only include safe properties from saved appState
+        if (appState) {
+          if (appState.viewBackgroundColor) cleanAppState.viewBackgroundColor = appState.viewBackgroundColor;
+          if (appState.theme) cleanAppState.theme = appState.theme;
+          if (typeof appState.zenModeEnabled === 'boolean') cleanAppState.zenModeEnabled = appState.zenModeEnabled;
+          if (typeof appState.objectsSnapModeEnabled === 'boolean') cleanAppState.objectsSnapModeEnabled = appState.objectsSnapModeEnabled;
+        }
+        
         const loadedData = {
           elements: elements || [],
-          appState: {
-            viewBackgroundColor: "#ffffff",
-            theme: "light",
-            ...appState
-          }
+          appState: cleanAppState
         };
+        
         console.log('✅ Loaded saved data:', { elementsCount: elements?.length || 0 });
         setInitialData(loadedData);
       } else {
@@ -57,6 +84,21 @@ const MindMapView = () => {
       }
     } catch (error) {
       console.error('❌ Error loading saved mind map:', error);
+      // Reset to safe default on error
+      setInitialData({
+        elements: [],
+        appState: {
+          viewBackgroundColor: "#ffffff",
+          theme: "light",
+          gridSize: null,
+          zenModeEnabled: false,
+          objectsSnapModeEnabled: false,
+          scrollX: 0,
+          scrollY: 0,
+          zoom: { value: 1 },
+          collaborators: new Map(),
+        },
+      });
     }
   }, [storageKey]);
 
@@ -169,12 +211,26 @@ const MindMapView = () => {
 
       {/* Excalidraw Canvas */}
       <div className="mindmap-canvas">
-        <Excalidraw
-          initialData={initialData}
-          excalidrawAPI={(api) => setExcalidrawAPI(api)}
-          renderTopRightUI={() => null}
-          renderFooter={() => null}
-        />
+        <ErrorBoundary>
+          <Excalidraw
+            initialData={initialData}
+            excalidrawAPI={(api) => {
+              setExcalidrawAPI(api);
+              console.log('🔌 Excalidraw API connected');
+            }}
+            renderTopRightUI={() => null}
+            renderFooter={() => null}
+            isCollaborating={false}
+            UIOptions={{
+              canvasActions: {
+                loadScene: false,
+                saveScene: false,
+                export: false,
+                saveAsImage: false,
+              },
+            }}
+          />
+        </ErrorBoundary>
       </div>
     </div>
   );
