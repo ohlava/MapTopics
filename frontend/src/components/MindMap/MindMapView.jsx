@@ -103,12 +103,15 @@ const MindMapView = () => {
       <div className="mindmap-canvas">
         <Excalidraw
           initialData={{
+            elements: [],
             appState: {
               viewBackgroundColor: "#ffffff",
               theme: "light",
             },
           }}
           excalidrawAPI={(api) => setExcalidrawAPI(api)}
+          renderTopRightUI={() => null}
+          renderFooter={() => null}
         />
       </div>
     </div>
