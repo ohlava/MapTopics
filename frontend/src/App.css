@@ -96,6 +96,12 @@ body {
   padding-top: 120px; /* Space for desktop nav */
 }
 
+/* When on the Explore Feed (using Virtuoso with window scroll),
+   disable inner scrolling to avoid double scrollbars. */
+.main-content.feed {
+  overflow: visible !important;
+}
+
 /* Fullscreen mode for mind map */
 .main-content.fullscreen {
   padding: 0 !important;
