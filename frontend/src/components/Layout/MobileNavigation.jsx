@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { LayoutGroup, motion as Motion } from 'framer-motion';
 import { Search, Settings, BookOpen, Map } from 'lucide-react';
 import './MobileNavigation.css';
 
@@ -13,6 +12,7 @@ const MobileNavigation = ({ activeTab, onTabChange }) => {
 
   return (
     <div className="mobile-nav">
+      <LayoutGroup>
       <div className="mobile-nav-container">
         {tabs.map((tab) => {
           const IconComponent = tab.icon;
@@ -25,15 +25,11 @@ const MobileNavigation = ({ activeTab, onTabChange }) => {
               onClick={() => onTabChange(tab.id)}
             >
               {isActive && (
-                <motion.div
+                <Motion.div
                   className="nav-tab-background"
                   layoutId="activeTab"
                   initial={false}
-                  transition={{
-                    type: "spring",
-                    stiffness: 500,
-                    damping: 30
-                  }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 />
               )}
               <div className="nav-tab-content">
@@ -44,6 +40,7 @@ const MobileNavigation = ({ activeTab, onTabChange }) => {
           );
         })}
       </div>
+      </LayoutGroup>
     </div>
   );
 };

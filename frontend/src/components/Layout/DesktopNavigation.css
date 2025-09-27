@@ -53,7 +53,6 @@
   color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 500;
-  min-width: 120px;
   white-space: nowrap;
 }
 
@@ -68,7 +67,7 @@
 }
 
 .nav-tab.active {
-  border-color: rgba(var(--primary-rgb), 0.3);
+  border-color: var(--glass-border);
   color: var(--primary-color);
 }
 

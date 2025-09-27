@@ -24,6 +24,7 @@
   box-shadow: 0 8px 32px var(--shadow-color);
   pointer-events: all;
   gap: 0;
+  overflow: hidden;
 }
 
 .nav-tab {
@@ -38,6 +39,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .nav-tab-background {
@@ -47,9 +49,10 @@
   right: 0;
   bottom: 0;
   background: transparent;
-  border-radius: var(--radius-lg);
+  border-radius: inherit;
   backdrop-filter: none;
   border: none;
+  pointer-events: none;
 }
 
 .nav-tab-content {
@@ -68,4 +71,28 @@
   font-weight: 500;
   text-align: center;
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Subtle active state background to improve visibility */
+.nav-tab.active .nav-tab-background {
+  background: rgba(var(--primary-rgb), 0.08);
+  border: 3px solid rgba(var(--primary-rgb), 0.1);
+  border-radius: inherit;
+}
+
+/* Very small screens: hide labels to prevent overflow */
+@media (max-width: 360px) {
+  .nav-tab-label { display: none; }
+  .mobile-nav .nav-tab-label { display: none; }
+}
+
+/* Extra tiny screens: slightly reduce icon size */
+@media (max-width: 320px) {
+  .nav-tab { padding: 4px; }
+  .nav-tab-content svg { width: 20px; height: 20px; }
+  .mobile-nav .nav-tab { padding: 4px; }
+  .mobile-nav .nav-tab-content svg { width: 20px; height: 20px; }
 }
