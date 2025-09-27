@@ -1,0 +1,1 @@
+.notfound-container{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;min-height:40vh;padding:24px}.notfound-container h1{font-size:72px;margin:0;line-height:1}.notfound-link{color:#3b82f6;text-decoration:none;border:1px solid #3b82f6;padding:8px 12px;border-radius:8px}.notfound-link:hover{background:#3b82f6;color:white}

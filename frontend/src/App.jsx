@@ -1,18 +1,48 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import MobileNavigation from './components/Layout/MobileNavigation';
 import DesktopNavigation from './components/Layout/DesktopNavigation';
 import ExploreFeed from './components/Feed/ExploreFeed';
-import SearchView from './components/Search/SearchView';
-import SettingsView from './components/Settings/SettingsView';
-import MindMapView from './components/MindMap/MindMapView';
 import HealthCheck from './components/Debug/HealthCheck';
+import NotFound from './components/NotFound';
 import './App.css';
+
+// Lazy load heavier routes to improve initial load
+const SearchView = lazy(() => import('./components/Search/SearchView'));
+const SettingsView = lazy(() => import('./components/Settings/SettingsView'));
+const MindMapView = lazy(() => import('./components/MindMap/MindMapView'));
+
+// useMediaQuery hook using matchMedia for responsive handling without resize math
+const useMediaQuery = (query) => {
+  const mql = useMemo(() => (typeof window !== 'undefined' ? window.matchMedia(query) : null), [query]);
+  const [matches, setMatches] = useState(() => mql ? mql.matches : false);
+
+  useEffect(() => {
+    if (!mql) return;
+    const handler = (e) => setMatches(e.matches);
+    // Older Safari uses addListener/removeListener
+    if (mql.addEventListener) {
+      mql.addEventListener('change', handler);
+    } else {
+      mql.addListener(handler);
+    }
+    setMatches(mql.matches);
+    return () => {
+      if (mql.removeEventListener) {
+        mql.removeEventListener('change', handler);
+      } else {
+        mql.removeListener(handler);
+      }
+    };
+  }, [mql]);
+
+  return matches;
+};
 
 const AppContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const [debugInfo, setDebugInfo] = useState({});
 
   // Determine active tab based on current route
@@ -26,16 +56,7 @@ const AppContent = () => {
 
   const activeTab = getActiveTabFromPath(location.pathname);
 
-  // Detect screen size for responsive layout
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  // Screen size is now handled by useMediaQuery
 
   const handleSearch = (query) => {
     console.log('Search query:', query);
@@ -75,13 +96,15 @@ const AppContent = () => {
 
   return (
     <div className="app">
-      <HealthCheck 
-        cardsInMemory={debugInfo.cardsInMemory}
-        offset={debugInfo.offset}
-        hasMore={debugInfo.hasMore}
-        totalCount={debugInfo.totalCount}
-        loading={debugInfo.loading}
-      />
+      {import.meta && import.meta.env && import.meta.env.DEV && (
+        <HealthCheck 
+          cardsInMemory={debugInfo.cardsInMemory}
+          offset={debugInfo.offset}
+          hasMore={debugInfo.hasMore}
+          totalCount={debugInfo.totalCount}
+          loading={debugInfo.loading}
+        />
+      )}
       
       {/* Navigation - Hide on mindmap view */}
       {!activeTab.includes('mindmap') && (
@@ -103,12 +126,15 @@ const AppContent = () => {
 
       {/* Main Content */}
       <main className={`main-content ${isMobile ? 'mobile' : 'desktop'} ${activeTab.includes('mindmap') ? 'fullscreen' : ''}`}>
-        <Routes>
-          <Route path="/" element={<ExploreFeed onDebugInfoChange={handleDebugInfoChange} />} />
-          <Route path="/search" element={<SearchView />} />
-          <Route path="/settings" element={<SettingsView />} />
-          <Route path="/mindmap/:topic?" element={<MindMapView />} />
-        </Routes>
+        <Suspense fallback={<div style={{ padding: 16 }}>Loading…</div>}>
+          <Routes>
+            <Route path="/" element={<ExploreFeed onDebugInfoChange={handleDebugInfoChange} />} />
+            <Route path="/search" element={<SearchView />} />
+            <Route path="/settings" element={<SettingsView />} />
+            <Route path="/mindmap/:topic?" element={<MindMapView />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </main>
     </div>
   );
