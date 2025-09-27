@@ -1,0 +1,25 @@
+/* Styles for users with JavaScript disabled */
+.no-js-warning {
+  box-sizing: border-box;
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 16px 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff3cd;
+  color: #664d03;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.no-js-warning h1 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+
+.no-js-warning p {
+  margin: 0;
+  font-size: 0.95rem;
+}
