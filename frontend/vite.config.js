@@ -12,8 +12,6 @@ export default defineConfig({
   },
   define: {
     'process.env': {},
-    'process.platform': JSON.stringify(process.platform),
-    'process.version': JSON.stringify(process.version),
   },
   resolve: {
     alias: {

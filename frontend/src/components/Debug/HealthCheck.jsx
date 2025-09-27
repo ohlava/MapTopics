@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { apiService } from '../../services/api';
 import './Debug.css';
 
-const HealthCheck = ({ cardsInMemory, offset, hasMore, totalCount, loading }) => {
+const HealthCheck = ({ cardsInMemory, offset, hasMore, loading }) => {
   const [status, setStatus] = useState('checking');
   const [message, setMessage] = useState('');
 
