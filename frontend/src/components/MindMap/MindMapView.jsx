@@ -4,6 +4,7 @@ import { ArrowLeft, Save, Download } from 'lucide-react';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import ErrorBoundary from './ErrorBoundary';
 import './MindMapView.css';
+import '@excalidraw/excalidraw/index.css';
 
 const MindMapView = () => {
   const { topic } = useParams();
