@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Excalidraw } from '@excalidraw/excalidraw';
 import { ArrowLeft, Save, Download } from 'lucide-react';
+import { Excalidraw } from '@excalidraw/excalidraw';
 import ErrorBoundary from './ErrorBoundary';
 import './MindMapView.css';
 
@@ -9,21 +9,10 @@ const MindMapView = () => {
   const { topic } = useParams();
   const navigate = useNavigate();
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
-  const [initialData, setInitialData] = useState({
-    elements: [],
-    appState: {
-      viewBackgroundColor: "#ffffff",
-      theme: "light",
-      gridSize: null,
-      zenModeEnabled: false,
-      objectsSnapModeEnabled: false,
-      scrollX: 0,
-      scrollY: 0,
-      zoom: { value: 1 },
-      collaborators: new Map(),
-    },
-  });
+  const [initialData, setInitialData] = useState(null);
   const lastSaveTime = useRef(0);
+
+
 
   // Debug helper - you can call this from browser console
   window.debugMindMap = {
@@ -51,26 +40,13 @@ const MindMapView = () => {
       if (savedData) {
         const { elements, appState } = JSON.parse(savedData);
         
-        // Ensure appState has proper structure for Safari compatibility
+        // Create a clean appState with proper collaborators Map
         const cleanAppState = {
-          viewBackgroundColor: "#ffffff",
-          theme: "light",
-          gridSize: null,
-          zenModeEnabled: false,
-          objectsSnapModeEnabled: false,
-          scrollX: appState?.scrollX || 0,
-          scrollY: appState?.scrollY || 0,
-          zoom: appState?.zoom || { value: 1 },
-          collaborators: new Map(), // Always use a fresh Map to avoid Safari issues
+          viewBackgroundColor: appState?.viewBackgroundColor || "#ffffff",
+          theme: appState?.theme || "light",
+          ...appState,
+          collaborators: new Map() // Always use fresh Map for collaborators
         };
-        
-        // Only include safe properties from saved appState
-        if (appState) {
-          if (appState.viewBackgroundColor) cleanAppState.viewBackgroundColor = appState.viewBackgroundColor;
-          if (appState.theme) cleanAppState.theme = appState.theme;
-          if (typeof appState.zenModeEnabled === 'boolean') cleanAppState.zenModeEnabled = appState.zenModeEnabled;
-          if (typeof appState.objectsSnapModeEnabled === 'boolean') cleanAppState.objectsSnapModeEnabled = appState.objectsSnapModeEnabled;
-        }
         
         const loadedData = {
           elements: elements || [],
@@ -81,53 +57,52 @@ const MindMapView = () => {
         setInitialData(loadedData);
       } else {
         console.log('📝 No saved data found, using default');
+        setInitialData({
+          elements: [],
+          appState: {
+            viewBackgroundColor: "#ffffff",
+            theme: "light",
+            collaborators: new Map()
+          }
+        });
       }
     } catch (error) {
       console.error('❌ Error loading saved mind map:', error);
-      // Reset to safe default on error
       setInitialData({
         elements: [],
         appState: {
           viewBackgroundColor: "#ffffff",
           theme: "light",
-          gridSize: null,
-          zenModeEnabled: false,
-          objectsSnapModeEnabled: false,
-          scrollX: 0,
-          scrollY: 0,
-          zoom: { value: 1 },
-          collaborators: new Map(),
-        },
+          collaborators: new Map()
+        }
       });
     }
-  }, [storageKey]);
+  }, [storageKey, topic]);
 
-  // Debounced auto-save function to prevent infinite loops
-  const debouncedAutoSave = useCallback(() => {
+  // Auto-save function
+  const handleChange = useCallback((elements, appState) => {
     const now = Date.now();
-    if (now - lastSaveTime.current < 1000) return; // Prevent saves more frequent than 1 second
+    if (now - lastSaveTime.current < 2000) return; // Prevent saves more frequent than 2 seconds
     
-    if (excalidrawAPI) {
-      try {
-        const elements = excalidrawAPI.getSceneElements();
-        const appState = excalidrawAPI.getAppState();
-        
-        console.log('💾 Auto-saving mind map:', { elementsCount: elements.length });
-        
-        const saveData = {
-          elements,
-          appState,
-          topic: topic || 'Default Canvas',
-          timestamp: new Date().toISOString()
-        };
-        
-        localStorage.setItem(storageKey, JSON.stringify(saveData));
-        lastSaveTime.current = now;
-      } catch (error) {
-        console.error('❌ Error auto-saving mind map:', error);
-      }
+    try {
+      console.log('💾 Auto-saving mind map:', { elementsCount: elements.length });
+      
+      // Create a serializable copy of appState (exclude collaborators Map)
+      const { collaborators: _collaborators, ...serializableAppState } = appState;
+      
+      const saveData = {
+        elements,
+        appState: serializableAppState,
+        topic: topic || 'Default Canvas',
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem(storageKey, JSON.stringify(saveData));
+      lastSaveTime.current = now;
+    } catch (error) {
+      console.error('❌ Error auto-saving mind map:', error);
     }
-  }, [excalidrawAPI, storageKey, topic]);
+  }, [storageKey, topic]);
 
   // Manual save function
   const handleSave = () => {
@@ -136,9 +111,12 @@ const MindMapView = () => {
         const elements = excalidrawAPI.getSceneElements();
         const appState = excalidrawAPI.getAppState();
         
+        // Create a serializable copy of appState (exclude collaborators Map)
+        const { collaborators: _collaborators, ...serializableAppState } = appState;
+        
         const saveData = {
           elements,
-          appState,
+          appState: serializableAppState,
           topic: topic || 'Untitled',
           timestamp: new Date().toISOString()
         };
@@ -182,6 +160,28 @@ const MindMapView = () => {
     navigate('/');
   };
 
+  // Render loading state if initial data isn't loaded yet
+  if (!initialData) {
+    return (
+      <div className="mindmap-view">
+        <div className="mindmap-header">
+          <div className="mindmap-nav">
+            <button className="back-button" onClick={handleBackToFeed}>
+              <ArrowLeft size={20} />
+              <span>Back to Feed</span>
+            </button>
+            <div className="mindmap-title">
+              <h2>Loading...</h2>
+            </div>
+          </div>
+        </div>
+        <div className="mindmap-canvas" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div>Loading mind map...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mindmap-view">
       {/* Top Navigation Bar */}
@@ -218,6 +218,7 @@ const MindMapView = () => {
               setExcalidrawAPI(api);
               console.log('🔌 Excalidraw API connected');
             }}
+            onChange={handleChange}
             renderTopRightUI={() => null}
             renderFooter={() => null}
             isCollaborating={false}

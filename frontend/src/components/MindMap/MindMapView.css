@@ -96,21 +96,6 @@
   min-height: 0; /* Important for flex child */
 }
 
-/* Ensure footer and all UI elements are visible */
-.mindmap-canvas .excalidraw .footer,
-.mindmap-canvas .excalidraw .ToolIcon,
-.mindmap-canvas .excalidraw .App-bottom-bar {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: block !important;
-}
-
-/* Ensure Excalidraw fills the container */
-.mindmap-canvas .excalidraw {
-  height: 100%;
-  width: 100%;
-}
-
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .mindmap-nav {
