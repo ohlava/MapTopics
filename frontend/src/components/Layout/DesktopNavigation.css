@@ -68,8 +68,8 @@
 }
 
 .nav-tab.active {
-  border-color: rgba(102, 126, 234, 0.3);
-  color: #667eea;
+  border-color: rgba(var(--primary-rgb), 0.3);
+  color: var(--primary-color);
 }
 
 .nav-search {
@@ -104,8 +104,8 @@
 }
 
 .search-input:focus {
-  border-color: rgba(102, 126, 234, 0.5);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: rgba(var(--primary-rgb), 0.5);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
 }
 
 .nav-settings {
@@ -129,6 +129,6 @@
 }
 
 .nav-settings .settings-button.active {
-  border-color: rgba(102, 126, 234, 0.3);
-  color: #667eea;
+  border-color: rgba(var(--primary-rgb), 0.3);
+  color: var(--primary-color);
 }

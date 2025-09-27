@@ -198,7 +198,7 @@
 
 .empty-state .retry-button:hover {
   background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(102, 126, 234, 0.3);
+  border-color: rgba(var(--primary-rgb), 0.3);
 }
 
 /* Mobile Responsive */
