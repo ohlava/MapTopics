@@ -68,8 +68,14 @@
 .expand-button {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
-  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   backdrop-filter: blur(10px);
@@ -206,6 +212,8 @@
   width: 100%;
   overflow: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .close-button {
@@ -215,7 +223,14 @@
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm);
+  /* Square icon button */
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   backdrop-filter: blur(10px);
@@ -230,8 +245,12 @@
 
 .fullscreen-content {
   padding: var(--spacing-2xl);
-  height: 100%;
+  /* Allow this section to be the scroll container */
+  flex: 1 1 auto;
+  min-height: 0; /* critical for flex children to allow inner scroll */
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* smooth momentum scroll on iOS */
+  overscroll-behavior: contain; /* prevent background scroll chaining */
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
@@ -346,6 +365,12 @@
   .fullscreen-title {
     font-size: 1.5rem;
   }
+
+  .expand-button,
+  .close-button {
+    width: 36px;
+    height: 36px;
+  }
   
   .fullscreen-description {
     font-size: 1rem;
@@ -368,5 +393,11 @@
   
   .fullscreen-content {
     padding: var(--spacing-lg);
+  }
+
+  .expand-button,
+  .close-button {
+    width: 32px;
+    height: 32px;
   }
 }

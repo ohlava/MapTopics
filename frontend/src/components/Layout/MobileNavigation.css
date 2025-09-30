@@ -7,9 +7,9 @@
   left: 0;
   right: 0;
   z-index: 100;
-  padding: var(--spacing-md);
+  padding: 0 calc(var(--spacing-md) * 0.8) calc(var(--spacing-md) * 0.8);
   background: transparent;
-  pointer-events: none;
+  pointer-events: auto;   /* Allow this layer to intercept clicks so content underneath isn't clickable */
 }
 
 .mobile-nav-container {
@@ -22,9 +22,22 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 8px 32px var(--shadow-color);
-  pointer-events: all;
+  /* Keep the nav itself clickable */
+  pointer-events: auto;
   gap: 0;
   overflow: hidden;
+}
+
+/* Click shield to block interactions under the rounded container near screen edges */
+.mobile-nav::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  background: transparent;
+  pointer-events: auto;
 }
 
 .nav-tab {
@@ -83,8 +96,12 @@
   border-radius: inherit;
 }
 
+@media (max-width: 420px) {
+  .nav-tab-label { font-size: 0.62rem; }
+}
+
 /* Very small screens: hide labels to prevent overflow */
-@media (max-width: 360px) {
+@media (max-width: 380px) {
   .nav-tab-label { display: none; }
   .mobile-nav .nav-tab-label { display: none; }
 }
