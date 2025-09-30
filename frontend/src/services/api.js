@@ -111,6 +111,50 @@ export const apiService = {
       
       throw new ApiError('Backend is not available.', 0);
     }
+  },
+
+  /**
+   * POST an Excalidraw scene (full export or elements array) and get back a summary
+   * @param {object|Array} payload
+   * @returns {Promise<{elementsCount:number,nodes:number,edges:number,metadataKeys:string[]}>}
+   */
+  async postExcalidrawParse(payload) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/excalidraw/parse`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        throw new ApiError(`HTTP error! status: ${response.status}`, response.status);
+      }
+      return await response.json();
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError('Failed to parse scene.', 0);
+    }
+  },
+
+  /**
+   * POST an Excalidraw scene and get back the reconstructed scene for lossless check
+   * @param {object|Array} payload
+   * @returns {Promise<object|Array>}
+   */
+  async postExcalidrawEcho(payload) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/excalidraw/echo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        throw new ApiError(`HTTP error! status: ${response.status}`, response.status);
+      }
+      return await response.json();
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError('Failed to echo scene.', 0);
+    }
   }
 };
 

@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Optional
+from typing import List, Optional, Union
 from pydantic import BaseModel
 import asyncio
 import math
+from models.excalidraw_models import ExcalidrawDocument
 
 app = FastAPI()
 
@@ -94,6 +95,31 @@ def read_root():
 def health_check():
     """A simple health check endpoint to confirm the API is running."""
     return {"status": "ok", "message": "API is healthy"}
+
+
+# --- Excalidraw scene models ---
+@app.post("/api/excalidraw/parse")
+def parse_excalidraw_scene(payload: Union[dict, list] = Body(...)):
+    """
+    Accepts a full Excalidraw export JSON or a list of elements (as seen in localStorage)
+    and returns our normalized, lossless document shape.
+    """
+    doc = ExcalidrawDocument.from_raw_scene(payload)
+    return {
+        "elementsCount": len(doc.elements),
+        "nodes": len(doc.nodes),
+        "edges": len(doc.edges),
+        "metadataKeys": list(doc.metadata.keys()),
+    }
+
+
+@app.post("/api/excalidraw/echo")
+def echo_excalidraw_scene(payload: Union[dict, list] = Body(...)):
+    """
+    Validates and then re-serializes the scene to prove lossless reconstruction.
+    """
+    doc = ExcalidrawDocument.from_raw_scene(payload)
+    return doc.to_raw_scene()
 
 @app.get("/api/explore", response_model=ExploreResponse)
 async def get_explore_cards(
