@@ -5,6 +5,9 @@ from pydantic import BaseModel
 import asyncio
 import math
 from models.excalidraw_models import ExcalidrawDocument
+from graph.networkx_adapter import excalidraw_to_networkx
+import io
+import base64
 
 app = FastAPI()
 
@@ -120,6 +123,108 @@ def echo_excalidraw_scene(payload: Union[dict, list] = Body(...)):
     """
     doc = ExcalidrawDocument.from_raw_scene(payload)
     return doc.to_raw_scene()
+
+
+@app.post("/api/excalidraw/render")
+def render_excalidraw_scene(payload: Union[dict, list] = Body(...)):
+    """
+    Accepts a full Excalidraw export JSON or a list of elements, converts it to a
+    NetworkX graph, renders a simple PNG preview and returns it as a data URL.
+    """
+    doc = ExcalidrawDocument.from_raw_scene(payload)
+    G = excalidraw_to_networkx(doc, directed=True, allow_multi=True, include_deleted=False)
+
+    try:
+        import matplotlib
+        matplotlib.use("Agg")  # non-GUI backend
+        import matplotlib.pyplot as plt
+        from matplotlib.patches import Circle
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Matplotlib is required to render images: {e}")
+
+    # If no nodes, render a friendly placeholder
+    if G.number_of_nodes() == 0:
+        dpi = 96
+        width_px, height_px = 480, 240
+        fig_w_in, fig_h_in = width_px / dpi, height_px / dpi
+
+        fig, ax = plt.subplots(figsize=(fig_w_in, fig_h_in), dpi=dpi)
+        ax.set_facecolor("white")
+        ax.axis("off")
+        ax.text(
+            0.5,
+            0.5,
+            "No graph to render",
+            ha="center",
+            va="center",
+            fontsize=14,
+            color="#888888",
+            transform=ax.transAxes,
+        )
+        buf = io.BytesIO()
+        plt.tight_layout(pad=0)
+        fig.savefig(buf, format="png", dpi=dpi, facecolor="white", pad_inches=0)
+        plt.close(fig)
+        buf.seek(0)
+        b64 = base64.b64encode(buf.read()).decode("ascii")
+        return {"format": "png", "width": width_px, "height": height_px, "dataUrl": f"data:image/png;base64,{b64}"}
+
+    # Build positions based on element bounding boxes
+    pos = {}
+    xs, ys = [], []
+    for n, data in G.nodes(data=True):
+        x = float(data.get("x", 0.0)) + float(data.get("width", 0.0)) / 2.0
+        y = float(data.get("y", 0.0)) + float(data.get("height", 0.0)) / 2.0
+        pos[n] = (x, y)
+        xs.append(x)
+        ys.append(y)
+
+    min_x, max_x = min(xs), max(xs)
+    min_y, max_y = min(ys), max(ys)
+    padding = 40.0
+    width_px = max(1.0, (max_x - min_x) + 2 * padding)
+    height_px = max(1.0, (max_y - min_y) + 2 * padding)
+
+    dpi = 96
+    fig_w_in = max(1.0, width_px / dpi)
+    fig_h_in = max(1.0, height_px / dpi)
+
+    fig, ax = plt.subplots(figsize=(fig_w_in, fig_h_in), dpi=dpi)
+    ax.set_facecolor("white")
+    ax.axis("off")
+
+    ax.set_xlim(min_x - padding, max_x + padding)
+    ax.set_ylim(max_y + padding, min_y - padding)
+
+    # Draw edges as straight lines between centers
+    edge_color = "#999999"
+    for u, v in G.edges():
+        x1, y1 = pos[u]
+        x2, y2 = pos[v]
+        ax.plot([x1, x2], [y1, y2], color=edge_color, linewidth=1.5, alpha=0.9)
+
+    # Draw nodes as circles, size scaled lightly by element size
+    for n, data in G.nodes(data=True):
+        x, y = pos[n]
+        w = float(data.get("width", 40.0))
+        h = float(data.get("height", 40.0))
+        r = max(6.0, min(w, h) * 0.2)
+        fill = data.get("backgroundColor") or "#ffffff"
+        stroke = data.get("strokeColor") or "#1e1e1e"
+        circle = Circle((x, y), radius=r, facecolor=fill, edgecolor=stroke, linewidth=1.5, alpha=0.95)
+        ax.add_patch(circle)
+        label = data.get("text")
+        if label:
+            ax.text(x, y, str(label), ha="center", va="center", fontsize=8, color="#222222")
+
+    # Export to PNG in-memory
+    buf = io.BytesIO()
+    plt.tight_layout(pad=0)
+    fig.savefig(buf, format="png", dpi=dpi, facecolor="white", bbox_inches="tight", pad_inches=0)
+    plt.close(fig)
+    buf.seek(0)
+    b64 = base64.b64encode(buf.read()).decode("ascii")
+    return {"format": "png", "width": int(width_px), "height": int(height_px), "dataUrl": f"data:image/png;base64,{b64}"}
 
 @app.get("/api/explore", response_model=ExploreResponse)
 async def get_explore_cards(

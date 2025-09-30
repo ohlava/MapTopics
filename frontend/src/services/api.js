@@ -155,6 +155,28 @@ export const apiService = {
       if (error instanceof ApiError) throw error;
       throw new ApiError('Failed to echo scene.', 0);
     }
+  },
+
+  /**
+   * POST an Excalidraw scene and get back a rendered PNG data URL
+   * @param {object|Array} payload
+   * @returns {Promise<{format:string,width:number,height:number,dataUrl:string}>}
+   */
+  async postExcalidrawRender(payload) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/excalidraw/render`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        throw new ApiError(`HTTP error! status: ${response.status}`, response.status);
+      }
+      return await response.json();
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError('Failed to render scene.', 0);
+    }
   }
 };
 

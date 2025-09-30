@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { apiService } from '../../services/api';
+import './Debug.css';
 
 const defaultSample = `[
   {
@@ -36,6 +37,10 @@ export default function ExcalidrawDebug() {
   const [input, setInput] = useState(defaultSample);
   const [parseResult, setParseResult] = useState(null);
   const [echoResult, setEchoResult] = useState(null);
+  const [renderResult, setRenderResult] = useState(null);
+  const [showParse, setShowParse] = useState(true);
+  const [showEcho, setShowEcho] = useState(true);
+  const [showRender, setShowRender] = useState(true);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
 
@@ -65,30 +70,67 @@ export default function ExcalidrawDebug() {
     }
   };
 
+  const render = async () => {
+    setBusy(true); setError(null); setRenderResult(null);
+    try {
+      const body = JSON.parse(input);
+      const res = await apiService.postExcalidrawRender(body);
+      setRenderResult(res);
+    } catch (e) {
+      setError(e.message || String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
-    <div style={{ padding: 16, maxWidth: 900, margin: '0 auto' }}>
+    <div className="debug-excalidraw">
       <h2>Excalidraw Debug</h2>
       <p>Paste a full Excalidraw export or an elements array and test backend parse/echo.</p>
-      <textarea
-        style={{ width: '100%', margin: '10px 0px 0px', minHeight: 250, maxWidth: 700, fontFamily: 'monospace', fontSize: 12 }}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
-      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+      <textarea className="debug-textarea" value={input} onChange={(e) => setInput(e.target.value)} />
+      <div className="debug-controls">
         <button onClick={parse} disabled={busy}>Parse</button>
         <button onClick={echo} disabled={busy}>Echo</button>
+        <button onClick={render} disabled={busy}>Render</button>
       </div>
-      {error && <pre style={{ color: 'red' }}>{error}</pre>}
+      {error && <pre className="debug-error">{error}</pre>}
       {parseResult && (
         <div>
-          <h3>Parse result</h3>
-          <pre>{JSON.stringify(parseResult, null, 2)}</pre>
+          <div className="debug-section-header">
+            <h3>Parse result</h3>
+            <button className="debug-toggle-btn" onClick={() => setShowParse((v) => !v)}>
+              {showParse ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          {showParse && <pre className="debug-pre">{JSON.stringify(parseResult, null, 2)}</pre>}
         </div>
       )}
       {echoResult && (
         <div>
-          <h3>Echo result</h3>
-          <pre>{JSON.stringify(echoResult, null, 2)}</pre>
+          <div className="debug-section-header">
+            <h3>Echo result</h3>
+            <button className="debug-toggle-btn" onClick={() => setShowEcho((v) => !v)}>
+              {showEcho ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          {showEcho && <pre className="debug-pre">{JSON.stringify(echoResult, null, 2)}</pre>}
+        </div>
+      )}
+      {renderResult && (
+        <div>
+          <div className="debug-section-header">
+            <h3>Rendered graph</h3>
+            <button className="debug-toggle-btn" onClick={() => setShowRender((v) => !v)}>
+              {showRender ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          {showRender && (
+            renderResult.dataUrl ? (
+              <img className="debug-image" src={renderResult.dataUrl} alt="Rendered graph" />
+            ) : (
+              <pre className="debug-pre">{JSON.stringify(renderResult, null, 2)}</pre>
+            )
+          )}
         </div>
       )}
     </div>
