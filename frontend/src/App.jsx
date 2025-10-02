@@ -11,6 +11,7 @@ import './App.css';
 const SearchView = lazy(() => import('./components/Search/SearchView'));
 const SettingsView = lazy(() => import('./components/Settings/SettingsView'));
 const MindMapView = lazy(() => import('./components/MindMap/MindMapView'));
+const ExcalidrawDebug = lazy(() => import('./components/Debug/ExcalidrawDebug'));
 
 // useMediaQuery hook using matchMedia for responsive handling without resize math
 const useMediaQuery = (query) => {
@@ -132,6 +133,9 @@ const AppContent = () => {
             <Route path="/search" element={<SearchView />} />
             <Route path="/settings" element={<SettingsView />} />
             <Route path="/mindmap/:topic?" element={<MindMapView />} />
+            {import.meta.env.DEV && (
+              <Route path="/debug/excalidraw" element={<ExcalidrawDebug />} />
+            )}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

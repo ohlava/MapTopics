@@ -104,3 +104,78 @@
     line-height: 1.2;
   }
 }
+
+
+
+
+/* Excalidraw Debug View */
+
+.debug-excalidraw {
+  padding: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.debug-textarea {
+  width: 100%;
+  margin: 10px 0 0;
+  min-height: 250px;
+  max-width: 700px;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.debug-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.debug-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.debug-section-header h3 {
+  margin: 0;
+}
+
+.debug-toggle-btn {
+  font-size: 12px;
+  padding: 2px 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f7f7f7;
+  color: #333;
+  cursor: pointer;
+}
+
+.debug-toggle-btn:hover {
+  background: #efefef;
+}
+
+.debug-error {
+  color: #ef4444;
+  white-space: pre-wrap;
+}
+
+.debug-pre {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 8px;
+  overflow: auto;
+  max-height: 320px;
+}
+
+.debug-image {
+  max-width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 8px;
+  background: #fff;
+}
