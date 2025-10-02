@@ -2,9 +2,10 @@
 
 React frontend application for the MapTopics project, built with Vite for fast development and modern tooling.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - npm or yarn
 
@@ -20,7 +21,7 @@ npm run dev
 
 The application will be available at `http://localhost:5173`
 
-## 🛠️ Development
+## Development
 
 ### Available Scripts
 
@@ -31,9 +32,9 @@ npm run preview  # Preview production build locally
 npm run lint     # Run ESLint
 ```
 
-### Project Structure
+## Project Structure
 
-```
+```sh
 frontend/
 ├── public/             # Static assets
 │   └── vite.svg        # Vite logo
@@ -51,13 +52,13 @@ frontend/
 └── README.md           # This file
 ```
 
-## 🎨 UI Framework & Styling
+## UI Framework & Styling
 
 - **React 19** - Latest React with modern features
 - **CSS** - Custom CSS with CSS variables for theming
 - **Responsive Design** - Mobile-first approach
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -72,11 +73,12 @@ VITE_APP_TITLE=MapTopics
 ### Vite Configuration
 
 The project uses Vite for:
+
 - **Fast HMR** (Hot Module Replacement)
 - **Modern build tooling**
 - **React plugin** for JSX support
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Install testing dependencies
@@ -86,7 +88,7 @@ npm install --save-dev vitest @testing-library/react @testing-library/jest-dom
 npm test
 ```
 
-## 📦 Building for Production
+## Building for Production
 
 ```bash
 # Create production build
@@ -98,18 +100,19 @@ npm run preview
 
 The build artifacts will be stored in the `dist/` directory.
 
-## 🔗 Backend Integration
+## Backend Integration
 
 The frontend is configured to work with the FastAPI backend:
+
 - **API Base URL**: `http://localhost:8000`
 - **CORS**: Backend configured to accept requests from this frontend
 - **Development**: Both servers run simultaneously during development
 
-## 🚀 Deployment
+## Deployment
 
 [To be documented - static hosting, CDN setup, etc.]
 
-## 🎯 Future Enhancements
+## Future Enhancements
 
 - [ ] Add routing (React Router)
 - [ ] State management (Redux/Zustand)

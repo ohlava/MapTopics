@@ -15,7 +15,7 @@ class ErrorBoundary extends React.Component {
     
     // Check if this is the collaborators.forEach Safari issue
     if (error.message && error.message.includes('collaborators.forEach')) {
-      console.warn('⚠️ Safari compatibility issue with Excalidraw collaborators detected');
+      console.warn('Safari compatibility issue with Excalidraw collaborators detected');
     }
   }
 

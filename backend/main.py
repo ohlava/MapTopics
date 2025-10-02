@@ -4,6 +4,8 @@ from typing import List, Optional
 from pydantic import BaseModel
 import asyncio
 import math
+import json
+from pathlib import Path
 
 app = FastAPI()
 
@@ -148,3 +150,83 @@ async def get_explore_cards(
 async def get_explore_count():
     """Get the total number of available explore cards."""
     return {"total_count": len(MOCK_TOPICS) * 3}
+
+
+# ---------------- Mind Map initial data API ----------------
+class MindMapInitialData(BaseModel):
+    topic: str
+    elements: list
+    appState: dict
+
+
+def _load_base_elements():
+    """Load base Excalidraw elements from local JSON file bundled with the backend."""
+    data_path = Path(__file__).parent / "data" / "excalidraw_base.json"
+    try:
+        with data_path.open("r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        return [] # empty scene
+
+
+BASE_ELEMENTS = _load_base_elements()
+
+
+@app.get("/api/mindmap/{topic}", response_model=MindMapInitialData)
+async def get_mindmap_initial_data(topic: str):
+    """
+    Return initial Excalidraw data for a given mind map topic.
+
+    This simulates server-stored mind maps. For now it's mock up only.
+    """
+    await asyncio.sleep(0.2)  # simulated latency (remove in production)
+
+    # Start from base and add a topic marker
+    elements = list(BASE_ELEMENTS) if isinstance(BASE_ELEMENTS, list) else []
+
+    topic_label = {
+        "id": f"topic-label-{abs(hash(topic)) % 10_000_000}",
+        "type": "text",
+        "x": 600,
+        "y": -650,
+        "width": 500,
+        "height": 60,
+        "angle": 0,
+        "strokeColor": "#1e1e1e",
+        "backgroundColor": "transparent",
+        "fillStyle": "solid",
+        "strokeWidth": 1,
+        "strokeStyle": "solid",
+        "roughness": 0,
+        "opacity": 100,
+        "groupIds": [],
+        "frameId": None,
+        "index": "a0",
+        "roundness": None,
+        "seed": 123456,
+        "version": 1,
+        "versionNonce": 1,
+        "isDeleted": False,
+        "boundElements": None,
+        "updated": 0,
+        "link": None,
+        "locked": False,
+        "text": f"Server init for: {topic}",
+        "fontSize": 28,
+        "fontFamily": 5,
+        "textAlign": "left",
+        "verticalAlign": "middle",
+        "containerId": None,
+        "originalText": f"Server init for: {topic}",
+        "autoResize": True,
+        "lineHeight": 1.25,
+    }
+
+    elements = elements + [topic_label]
+
+    app_state = {
+        "viewBackgroundColor": "#ffffff",
+        "theme": "light",
+    }
+
+    return MindMapInitialData(topic=topic, elements=elements, appState=app_state)

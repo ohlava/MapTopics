@@ -2,7 +2,7 @@
 
 FastAPI backend server for the MapTopics application.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.10+
@@ -23,13 +23,13 @@ uv run uvicorn main:app --reload
 
 The server will start at `http://localhost:8000`
 
-## 📋 API Documentation
+## API Documentation
 
 Once the server is running, visit:
 - **Interactive API docs**: `http://localhost:8000/docs`
 - **Alternative docs**: `http://localhost:8000/redoc`
 
-## 🛠️ Development
+## Development
 
 ### Project Structure
 
@@ -67,7 +67,7 @@ SECRET_KEY=your-secret-key-here
 DEBUG=True
 ```
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Install test dependencies (if not already installed)
@@ -80,18 +80,18 @@ uv run pytest
 uv run pytest --cov=.
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 - **Framework**: FastAPI
 - **Package Manager**: uv
 - **CORS**: Configured for frontend at localhost:5173
 - **Python Version**: 3.10+
 
-## 📦 Deployment
+## Deployment
 
 [To be documented - Docker setup, production configuration, etc.]
 
-## 🔧 Configuration
+## Configuration
 
 The application uses:
 - **CORS**: Allows requests from React frontend (localhost:5173)

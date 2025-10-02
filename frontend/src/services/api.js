@@ -51,6 +51,35 @@ export const apiService = {
   },
 
   /**
+   * Fetch initial Excalidraw data for a given mind map topic
+   * @param {string} topic
+   * @returns {Promise<{topic: string, elements: Array, appState: Object}>}
+   */
+  async getMindMapInitialData(topic) {
+    if (!topic) throw new ApiError('Topic is required', 400);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/mindmap/${encodeURIComponent(topic)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new ApiError(
+          `HTTP error! status: ${response.status}`,
+          response.status
+        );
+      }
+      
+      return await response.json();
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError('Failed to fetch mind map data from server.', 0);
+    }
+  },
+
+  /**
    * Get the total count of available cards
    * @returns {Promise<{total_count: number}>}
    */
