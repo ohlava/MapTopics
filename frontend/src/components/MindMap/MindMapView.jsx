@@ -235,17 +235,7 @@ const MindMapView = () => {
               console.log('Excalidraw API connected');
             }}
             onChange={handleChange}
-            renderTopRightUI={() => null}
-            renderFooter={() => null}
             isCollaborating={false}
-            UIOptions={{
-              canvasActions: {
-                loadScene: false,
-                saveScene: false,
-                export: false,
-                saveAsImage: false,
-              },
-            }}
           />
         </ErrorBoundary>
       </div>

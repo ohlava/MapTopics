@@ -1,0 +1,15 @@
+.App {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.excalidraw {
+  height: 100%;
+  width: 100%;
+}
+
+.excalidraw .excalidraw-container {
+  height: 100%;
+  width: 100%;
+} 
