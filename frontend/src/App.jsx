@@ -127,7 +127,7 @@ const AppContent = () => {
 
       {/* Main Content */}
       <main className={`main-content ${isMobile ? 'mobile' : 'desktop'} ${activeTab.includes('mindmap') ? 'fullscreen' : ''} ${activeTab === 'feed' ? 'feed' : ''}`}>
-        <Suspense fallback={<div style={{ padding: 16 }}>Loading…</div>}>
+        <Suspense fallback={<div className="loading-fallback">Loading…</div>}>
           <Routes>
             <Route path="/" element={<ExploreFeed onDebugInfoChange={handleDebugInfoChange} />} />
             <Route path="/search" element={<SearchView />} />

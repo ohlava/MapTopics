@@ -138,6 +138,10 @@ body {
   background-clip: text;
 }
 
+.loading-fallback {
+  padding: var(--spacing-md);
+}
+
 /* Common Animation */
 @keyframes pulse {
   0%, 100% {

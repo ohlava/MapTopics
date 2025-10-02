@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, RotateCcw, Copy, Pencil, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Download, RotateCcw, Copy, Pencil, ChevronDown, Check, X } from 'lucide-react';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import ErrorBoundary from './ErrorBoundary';
 import './MindMapView.css';
@@ -17,6 +17,8 @@ const MindMapView = () => {
   const [customMeta, setCustomMeta] = useState(null); // when viewing a custom map
   const [showRecent, setShowRecent] = useState(false);
   const lastSigRef = useRef('');
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
 
 
 
@@ -243,17 +245,22 @@ const MindMapView = () => {
     }
   };
 
-  // Rename custom map
-  const handleRename = () => {
+  const confirmRename = () => {
     if (!isCustom) return;
-    const current = customMeta?.title || 'Untitled';
-    const next = prompt('Rename mind map', current);
-    if (!next || next.trim() === '' || next === current) return;
-    const updated = mindmapLibrary.rename(id, next.trim());
+    const value = renameValue.trim();
+    const current = customMeta?.title || '';
+    if (!value || value === current) {
+      setIsRenaming(false);
+      setRenameValue('');
+      return;
+    }
+    const updated = mindmapLibrary.rename(id, value);
     if (updated) {
       setCustomMeta(updated);
-      const newSlug = updated.slug || makeSlug(next.trim());
-      navigate(`/m/${id}/${newSlug}`); // update URL
+      setIsRenaming(false);
+      setRenameValue('');
+      const newSlug = updated.slug || makeSlug(value);
+      navigate(`/m/${id}/${newSlug}`);
     }
   };
 
@@ -272,7 +279,7 @@ const MindMapView = () => {
             </div>
           </div>
         </div>
-        <div className="mindmap-canvas" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="mindmap-canvas loading-center">
           <div>Loading mind map...</div>
         </div>
       </div>
@@ -289,21 +296,49 @@ const MindMapView = () => {
             <span>Back to Feed</span>
           </button>
           
-          <div className="mindmap-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <h2>{isCustom ? (customMeta?.title || 'Custom Mind Map') : (topic ? decodeURIComponent(topic) : 'Mind Map')}</h2>
+          <div className="mindmap-title mindmap-title-row">
             {isCustom ? (
-              <button className="action-button" onClick={handleRename} title="Rename">
-                <Pencil size={16} />
-              </button>
-            ) : null}
-            <div style={{ position: 'relative' }}>
+              <div className="mindmap-title-row">
+                {!isRenaming ? (
+                  <>
+                    <h2>{customMeta?.title || 'Custom Mind Map'}</h2>
+                    <button className="action-button" onClick={() => { setRenameValue(customMeta?.title || ''); setIsRenaming(true); }} title="Rename">
+                      <Pencil size={16} />
+                    </button>
+                  </>
+                ) : (
+                  <div className="rename-row">
+                    <input
+                      value={renameValue}
+                      onChange={(e) => setRenameValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') confirmRename();
+                        if (e.key === 'Escape') { setIsRenaming(false); setRenameValue(''); }
+                      }}
+                      autoFocus
+                      placeholder="Enter name"
+                      className="rename-input"
+                    />
+                    <button className="action-button" onClick={confirmRename} title="Save">
+                      <Check size={16} />
+                    </button>
+                    <button className="action-button" onClick={() => { setIsRenaming(false); setRenameValue(''); }} title="Cancel">
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <h2>{topic ? decodeURIComponent(topic) : 'Mind Map'}</h2>
+            )}
+            <div className="recent-dropdown-pos">
               <button className="action-button" onClick={() => setShowRecent((s) => !s)} title="Recent maps">
                 <ChevronDown size={16} />
               </button>
               {showRecent && (
-                <div className="dropdown" style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #eee', borderRadius: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: 8, minWidth: 260, zIndex: 10 }}>
+                <div className="dropdown recent-dropdown">
                   {mindmapLibrary.listRecent().slice(0, 5).map((item) => (
-                    <div key={item.key} style={{ padding: '6px 8px', cursor: 'pointer' }} onClick={() => {
+                    <div key={item.key} className="dropdown-item" onClick={() => {
                       setShowRecent(false);
                       if (item.kind === 'custom') {
                         navigate(`/m/${item.id}/${item.slug || ''}`);
@@ -311,12 +346,12 @@ const MindMapView = () => {
                         navigate(`/mindmap/${encodeURIComponent(item.topic)}`);
                       }
                     }}>
-                      <div style={{ fontSize: 14, color: '#222' }}>{item.title || item.topic}</div>
-                      <div style={{ fontSize: 11, color: '#666' }}>{item.kind === 'custom' ? 'Custom' : 'Server'}</div>
+                      <div className="dropdown-title">{item.title || item.topic}</div>
+                      <div className="dropdown-sub">{item.kind === 'custom' ? 'Custom' : 'Server'}</div>
                     </div>
                   ))}
                   {mindmapLibrary.listRecent().length === 0 && (
-                    <div style={{ padding: '6px 8px', color: '#666' }}>No recent maps</div>
+                    <div className="dropdown-empty">No recent maps</div>
                   )}
                 </div>
               )}

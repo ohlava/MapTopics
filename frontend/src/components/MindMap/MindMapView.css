@@ -96,6 +96,66 @@
   min-height: 0; /* Important for flex child */
 }
 
+.loading-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mindmap-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.rename-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rename-input {
+  font-size: 18px;
+  padding: 4px 8px;
+}
+
+.recent-dropdown-pos {
+  position: relative;
+}
+
+.recent-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 8px;
+  min-width: 260px;
+  z-index: 10;
+}
+
+.dropdown-item {
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.dropdown-title {
+  font-size: 14px;
+  color: #222;
+}
+
+.dropdown-sub {
+  font-size: 11px;
+  color: #666;
+}
+
+.dropdown-empty {
+  padding: 6px 8px;
+  color: #666;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .mindmap-nav {
