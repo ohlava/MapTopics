@@ -133,6 +133,7 @@ const AppContent = () => {
             <Route path="/search" element={<SearchView />} />
             <Route path="/settings" element={<SettingsView />} />
             <Route path="/mindmap/:topic?" element={<MindMapView />} />
+            <Route path="/m/:id/:slug?" element={<MindMapView />} />
             {import.meta.env.DEV && (
               <Route path="/debug/excalidraw" element={<ExcalidrawDebug />} />
             )}
